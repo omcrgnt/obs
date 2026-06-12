@@ -1,4 +1,4 @@
-module github.com/mcrgnt/obs
+module github.com/omcrgnt/obs
 
 go 1.26.1
 

@@ -5,8 +5,8 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/mcrgnt/obs"
-	"github.com/mcrgnt/obs/testdata"
+	"github.com/omcrgnt/obs"
+	"github.com/omcrgnt/obs/testdata"
 )
 
 func TestObserveInAction(t *testing.T) {

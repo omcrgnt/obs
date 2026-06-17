@@ -1,8 +1,6 @@
-module github.com/mcrgnt/obs
+module github.com/omcrgnt/obs
 
 go 1.21
-
-replace github.com/mcrgnt/obs ../
 
 require (
 	go.opentelemetry.io/otel v1.24.0

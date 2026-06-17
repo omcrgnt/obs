@@ -3,7 +3,6 @@ package testdata
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -27,24 +26,17 @@ func newObserveRepo(base *Repo) *observeRepo {
 }
 
 func (o *observeRepo) Label() string {
-
 	return o.Repo.Label()
-
 }
 
 func (o *observeRepo) Save(ctx context.Context, data string) error {
-
 	ctx, span := otel.Tracer("obs").Start(ctx, o.label+"."+"Save")
 	defer span.End()
-
 	err := o.Repo.Save(ctx, data)
 	if err != nil {
-
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
-
 		return fmt.Errorf("[%s] Save: %w", o.label, err)
 	}
 	return err
-
 }

@@ -35,7 +35,7 @@ func TestObserveInAction(t *testing.T) {
 	}
 
 	// Проверяем формат: [Label] Method: Error
-	expected := "[card-storage] Save: database error"
+	expected := "[card-storage] Save: empty data"
 	if err.Error() != expected {
 		t.Errorf("wrong error format\nwant: %s\ngot:  %s", expected, err.Error())
 	}

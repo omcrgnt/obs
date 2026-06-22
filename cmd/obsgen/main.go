@@ -46,6 +46,22 @@ func newObserve{{capitalize .Type}}(base *{{.Type}}) *observe{{capitalize .Type}
 	return o
 }
 
+{{if .HasDeps}}
+func (o *observe{{capitalize .Type}}) Deps() []any {
+	return o.{{.Type}}.Deps()
+}
+{{end}}
+{{if .HasInject}}
+func (o *observe{{capitalize .Type}}) Inject(args []any) {
+	o.{{.Type}}.Inject(args)
+}
+{{end}}
+{{if .HasLabel}}
+func (o *observe{{capitalize .Type}}) Label() string {
+	return o.{{.Type}}.Label()
+}
+{{end}}
+
 {{range .Methods}}
 func (o *observe{{capitalize $.Type}}) {{.Name}}({{.Args}}) {{.Results}} {
 {{- if .HasCtx}}
@@ -103,7 +119,12 @@ func main() {
 
 	var pkgName string
 	var methods []Method
+	var hasDeps, hasInject, hasLabel bool
 	importsMap := make(map[string]string)
+	skipMethods := map[string]bool{
+		"Deps": true, "Inject": true, "NewResource": true,
+		"BuildConfig": true, "Observe": true, "Label": true,
+	}
 
 	for _, entry := range entries {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") ||
@@ -147,6 +168,20 @@ func main() {
 				}
 
 				if id != nil && id.Name == *typeName {
+					switch fn.Name.Name {
+					case "Deps":
+						hasDeps = true
+						continue
+					case "Inject":
+						hasInject = true
+						continue
+					case "Label":
+						hasLabel = true
+						continue
+					}
+					if skipMethods[fn.Name.Name] {
+						continue
+					}
 					methods = append(methods, analyze(fn))
 				}
 			}
@@ -185,7 +220,10 @@ func main() {
 		Methods      []Method
 		Imports      []string
 		NeedsContext bool
-	}{pkgName, *typeName, methods, imports, needsContext})
+		HasDeps      bool
+		HasInject    bool
+		HasLabel     bool
+	}{pkgName, *typeName, methods, imports, needsContext, hasDeps, hasInject, hasLabel})
 	if err != nil {
 		log.Fatal("template execution error:", err)
 	}
